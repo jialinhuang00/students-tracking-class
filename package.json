@@ -1,0 +1,45 @@
+{
+  "name": "coach-management",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "create-events": "tsx scripts/create-calendar-events.ts",
+    "cleanup-events": "tsx scripts/cleanup-calendar-events.ts",
+    "create-records": "tsx scripts/create-class-records.ts"
+  },
+  "dependencies": {
+    "@line/bot-sdk": "^10.1.2",
+    "@radix-ui/react-progress": "^1.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@supabase/supabase-js": "^2.38.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
+    "dotenv": "^16.4.5",
+    "googleapis": "^144.0.0",
+    "lucide-react": "^0.541.0",
+    "next": "15.0.0",
+    "react": "^18.0.0",
+    "react-day-picker": "^9.9.0",
+    "react-dom": "^18.0.0",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "autoprefixer": "^10.0.1",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "15.0.0",
+    "postcss": "^8.0.0",
+    "tailwindcss": "^3.3.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.0.0"
+  }
+}
