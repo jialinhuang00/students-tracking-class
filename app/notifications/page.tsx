@@ -333,7 +333,7 @@ export default function NotificationsPage() {
                     Reminder: You have a class on {displayDate} at{' '}
                     {dayjs(events.find(e => e.event_id === selected[0])?.start_datetime).format('HH:mm')}.
                   </p>
-                  <p className="text-gray-400">-- Coach Management System</p>
+                  <p className="text-gray-400">-- ClassNudge</p>
                 </div>
 
                 <div className="text-xs text-gray-500 uppercase tracking-wide">

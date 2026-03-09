@@ -76,7 +76,7 @@ async function registerNewUser(userId: string) {
     }
 
     // Send welcome message
-    await sendLineMessage(userId, `🎉 Welcome to the Coach Management System!
+    await sendLineMessage(userId, `Welcome to ClassNudge!
 
 Your profile has been created:
 • Name: ${userProfile.displayName}

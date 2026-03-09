@@ -146,7 +146,7 @@ export default function StudentsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: student.line_user_id,
-          message: `Test message - Coach Management System! Time: ${new Date().toLocaleString('zh-TW')}`
+          message: `Test message - ClassNudge! Time: ${new Date().toLocaleString('zh-TW')}`
         }),
       })
       setTestResult(response.ok ? `Sent to ${student.name}` : 'Send failed')

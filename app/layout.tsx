@@ -5,8 +5,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Student Class Tracking & Notification System',
-  description: 'A comprehensive system for tracking student class attendance and sending automated notifications',
+  title: 'ClassNudge',
+  description: 'Class scheduling, LINE reminders, and attendance tracking for coaches',
 }
 
 export default function RootLayout({

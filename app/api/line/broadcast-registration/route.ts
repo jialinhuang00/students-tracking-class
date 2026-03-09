@@ -3,7 +3,7 @@ import { sendLineBroadcast } from '@/lib/line'
 
 export async function POST() {
   try {
-    const registrationMessage = `🏃‍♂️ Welcome to the Coach Management System!
+    const registrationMessage = `Welcome to ClassNudge!
 
 Just send us any message and you'll be automatically registered in the system!
 

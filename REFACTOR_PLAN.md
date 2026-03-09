@@ -93,7 +93,7 @@ npm uninstall date-fns
 
 | Section | Content |
 |---------|---------|
-| What | Coach management system — LINE + Google Calendar + Supabase |
+| What | ClassNudge — LINE + Google Calendar + Supabase |
 | Stack | Next.js 15, Supabase, Google Calendar (service account), LINE Messaging API |
 | Setup | env vars needed, `npm install`, `npm run dev` |
 | Scripts | `create-events`, `cleanup-events`, `create-records` |
@@ -103,7 +103,7 @@ Keep under 50 lines.
 ### 3.2 CLAUDE.md
 
 ```
-# Coach Management System
+# ClassNudge
 
 Next.js 15 app in `app/` directory (App Router). No `src/` folder.
 

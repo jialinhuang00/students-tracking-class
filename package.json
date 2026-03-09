@@ -1,20 +1,21 @@
 {
-  "name": "students-tracking-class",
+  "name": "classnudge",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "create-events": "tsx scripts/create-calendar-events.ts",
-    "cleanup-events": "tsx scripts/cleanup-calendar-events.ts",
-    "create-records": "tsx scripts/create-class-records.ts"
+    "lint": "next lint"
   },
   "dependencies": {
     "@line/bot-sdk": "^10.1.2",
+    "@radix-ui/react-alert-dialog": "^1.1.15",
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-navigation-menu": "^1.2.14",
     "@radix-ui/react-progress": "^1.1.7",
-    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-separator": "^1.1.8",
+    "@radix-ui/react-slot": "^1.2.4",
     "@supabase/supabase-js": "^2.38.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

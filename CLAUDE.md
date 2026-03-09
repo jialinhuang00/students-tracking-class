@@ -1,26 +1,33 @@
-# Coach Management System
+# ClassNudge
 
-Next.js 15 app using App Router. No `src/` folder — code lives in `app/`, `lib/`, `components/`.
+Next.js 15 App Router. No `src/` folder — code in `app/`, `lib/`, `components/`.
 
 ## Stack
 
 | Layer | Tech | Config |
 |-------|------|--------|
-| DB | Supabase | `lib/supabase.ts` |
+| DB | Supabase (PostgreSQL) | `lib/supabase.ts` |
 | Calendar | Google Calendar (service account) | `lib/google-calendar.ts` |
 | Messaging | LINE Messaging API (`@line/bot-sdk`) | `lib/line.ts` |
-| UI | Tailwind + Radix primitives | `components/ui/` |
+| UI | Tailwind + shadcn/ui (Radix primitives) | `components/ui/` |
 
 ## Key Paths
 
+- Pages: `app/today/` (dashboard), `app/attendance/`, `app/notifications/`, `app/line-users/`
 - API routes: `app/api/` — all use try/catch + `NextResponse.json()`
-- Pages: `app/page.tsx` (dashboard), `app/attendance/`, `app/notifications/`, `app/line-users/`
+- Components: `components/` — `navigation.tsx`, `tomorrow-reminders.tsx`, `today-attendance.tsx`, `low-balance-alert.tsx`
 - DB types: `lib/supabase.ts` — `Coach`, `Student`, `ClassRecord`
 - Scripts: `scripts/` — `create-calendar-events`, `cleanup-calendar-events`, `create-class-records`
 
 ## Conventions
 
 - Dates: use `dayjs` (not `date-fns`)
+- UI: shadcn/ui components (`Button`, `Card`, `Badge`, `AlertDialog`, `Sheet`, `Breadcrumb`, `NavigationMenu`, `Separator`, `Calendar`)
+- Navigation: breadcrumb style, no nav bar
 - No test files yet
-- Google Calendar event title format: `姓名 電話號碼`
-- Workflow: Calendar events → create students + class_records → LINE notify → confirm attendance → deduct remaining_classes
+- Google Calendar event title = student name
+- Supabase joins return arrays (cast with `as Type[]` then `[0]`)
+
+## Workflow
+
+Calendar events → send LINE reminders → confirm attendance → deduct `remaining_classes`
