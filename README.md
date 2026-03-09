@@ -44,16 +44,10 @@ npm run dev
 3. Coach marks attendance after class
 4. Attended → `remaining_classes` decremented
 
-## Scripts
-
-| Command | Purpose |
-|---------|---------|
-| `npm run create-events` | Seed calendar with class events |
-| `npm run cleanup-events` | Remove all calendar events |
-| `npm run create-records` | Generate class records from calendar |
-
 ## DB
 
 Tables: `coaches`, `students`, `class_records`, `notification_status`
+
+All timestamps stored as `timestamp without time zone` in Asia/Taipei local time. Queries use local time strings — never `toISOString()`.
 
 Import `migrations/latest.sql` into Supabase SQL Editor, or restore from `.backup` (see `SUPABASE_RESTORE.md`).

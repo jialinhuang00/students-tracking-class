@@ -17,16 +17,16 @@ Next.js 15 App Router. No `src/` folder — code in `app/`, `lib/`, `components/
 - API routes: `app/api/` — all use try/catch + `NextResponse.json()`
 - Components: `components/` — `navigation.tsx`, `tomorrow-reminders.tsx`, `today-attendance.tsx`, `low-balance-alert.tsx`
 - DB types: `lib/supabase.ts` — `Coach`, `Student`, `ClassRecord`
-- Scripts: `scripts/` — `create-calendar-events`, `cleanup-calendar-events`, `create-class-records`
 
 ## Conventions
 
 - Dates: use `dayjs` (not `date-fns`)
-- UI: shadcn/ui components (`Button`, `Card`, `Badge`, `AlertDialog`, `Sheet`, `Breadcrumb`, `NavigationMenu`, `Separator`, `Calendar`)
-- Navigation: breadcrumb style, no nav bar
+- UI: shadcn/ui components (`Button`, `Card`, `Badge`, `AlertDialog`, `Sheet`, `Breadcrumb`, `NavigationMenu`, `Separator`, `Calendar`, `Popover`)
+- Navigation: breadcrumb style with "/" separators, no nav bar, no icons
 - No test files yet
 - Google Calendar event title = student name
 - Supabase joins return arrays (cast with `as Type[]` then `[0]`)
+- Timestamps: `timestamp without time zone` in Asia/Taipei local time. Query with `dayjs().format('YYYY-MM-DDT00:00:00')`, never `toISOString()`
 
 ## Workflow
 
