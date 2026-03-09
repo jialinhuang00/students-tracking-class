@@ -64,8 +64,8 @@ export default function AttendancePage() {
               remaining_classes
             )
           `)
-          .gte('class_date', dayjs(selectedDate).startOf('day').toISOString())
-          .lt('class_date', dayjs(selectedDate).add(1, 'day').startOf('day').toISOString())
+          .gte('class_date', dayjs(selectedDate).format('YYYY-MM-DDT00:00:00'))
+          .lt('class_date', dayjs(selectedDate).add(1, 'day').format('YYYY-MM-DDT00:00:00'))
           .order('class_date', { ascending: false })
 
         if (error) {
@@ -102,8 +102,8 @@ export default function AttendancePage() {
   useEffect(() => {
     async function fetchDateStats() {
       try {
-        const startDate = dayjs(selectedDate).subtract(2, 'month').startOf('month').toISOString()
-        const endDate = dayjs(selectedDate).add(2, 'month').endOf('month').toISOString()
+        const startDate = dayjs(selectedDate).subtract(2, 'month').startOf('month').format('YYYY-MM-DDT00:00:00')
+        const endDate = dayjs(selectedDate).add(2, 'month').endOf('month').format('YYYY-MM-DDT23:59:59')
 
         const response = await fetch(`/api/class-records/count?startDate=${startDate}&endDate=${endDate}`)
         const result = await response.json()

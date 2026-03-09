@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import dayjs from 'dayjs'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Navigation } from '@/components/navigation'
 import { supabase } from '@/lib/supabase'
 import { calendar_v3 } from 'googleapis'
@@ -32,7 +33,8 @@ export default function NotificationsPage() {
   const [selected, setSelected] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [fetchLoading, setFetchLoading] = useState(true)
-  const [selectedDate, setSelectedDate] = useState<string>(dayjs().add(1, 'day').format('YYYY-MM-DD'))
+  const [selectedDate, setSelectedDate] = useState<Date>(dayjs().add(1, 'day').toDate())
+  const [calendarOpen, setCalendarOpen] = useState(false)
   const [result, setResult] = useState<{ title: string; details: ResultDetails | null } | null>(null)
 
   const fetchEvents = useCallback(async () => {
@@ -148,30 +150,43 @@ export default function NotificationsPage() {
   const displayDate = dayjs(selectedDate).format('M/D')
 
   return (
-    <div className="min-h-screen bg-gray-50/30">
+    <div className="min-h-screen bg-background">
       <Navigation />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-lg font-semibold">Notifications</h1>
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={e => setSelectedDate(e.target.value)}
-            min={dayjs().format('YYYY-MM-DD')}
-            className="text-sm border rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="text-sm h-8">
+                {dayjs(selectedDate).format('YYYY-MM-DD')}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => {
+                  if (date) {
+                    setSelectedDate(date)
+                    setCalendarOpen(false)
+                  }
+                }}
+                disabled={(date) => dayjs(date).isBefore(dayjs(), 'day')}
+              />
+            </PopoverContent>
+          </Popover>
         </div>
 
         <div className="flex gap-4" style={{ minHeight: '500px' }}>
           {/* Left: Event List */}
-          <div className="w-80 bg-white rounded-xl border overflow-hidden flex flex-col shrink-0">
-            <div className="px-4 py-3 border-b bg-gray-50 flex items-center justify-between">
-              <span className="text-sm text-gray-600">
+          <div className="w-80 bg-background rounded-lg border overflow-hidden flex flex-col shrink-0">
+            <div className="px-4 py-3 border-b bg-muted/50 flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">
                 {fetchLoading ? 'Loading...' : `${events.length} classes on ${displayDate}`}
               </span>
               {selectableEvents.length > 0 && (
-                <button onClick={toggleAll} className="text-xs text-blue-600 hover:underline">
+                <button onClick={toggleAll} className="text-xs text-primary hover:underline">
                   {allSelected ? 'Deselect' : 'Select all'}
                 </button>
               )}
@@ -180,10 +195,10 @@ export default function NotificationsPage() {
             <div className="flex-1 overflow-y-auto divide-y">
               {fetchLoading ? (
                 <div className="flex items-center justify-center py-16">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600" />
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
                 </div>
               ) : events.length === 0 ? (
-                <div className="px-4 py-12 text-center text-sm text-gray-400">
+                <div className="px-4 py-12 text-center text-sm text-muted-foreground">
                   No classes on {displayDate}
                 </div>
               ) : (
@@ -193,11 +208,11 @@ export default function NotificationsPage() {
 
                   if (event.has_notify) {
                     return (
-                      <div key={event.event_id} className="flex items-center gap-3 px-4 py-3 bg-green-50/50">
+                      <div key={event.event_id} className="flex items-center gap-3 px-4 py-3 bg-green-50/50 dark:bg-green-950/20">
                         <span className="text-green-600 text-sm w-4 text-center">&#10003;</span>
                         <div className="flex-1">
                           <div className="font-medium text-sm">{event.summary}</div>
-                          <div className="text-xs text-gray-400">{dayjs(event.start_datetime).format('HH:mm')}</div>
+                          <div className="text-xs text-muted-foreground">{dayjs(event.start_datetime).format('HH:mm')}</div>
                         </div>
                         <span className="text-xs text-green-600">Sent</span>
                       </div>
@@ -209,7 +224,7 @@ export default function NotificationsPage() {
                       key={event.event_id}
                       className={`flex items-center gap-3 px-4 py-3 ${
                         canSelect
-                          ? `cursor-pointer hover:bg-blue-50 ${isSelected ? 'bg-blue-50/50' : ''}`
+                          ? `cursor-pointer hover:bg-accent ${isSelected ? 'bg-accent/50' : ''}`
                           : 'opacity-50 cursor-not-allowed'
                       }`}
                     >
@@ -218,11 +233,11 @@ export default function NotificationsPage() {
                         checked={isSelected}
                         onChange={() => canSelect && toggle(event.event_id)}
                         disabled={!canSelect}
-                        className="w-4 h-4 rounded accent-blue-600"
+                        className="w-4 h-4 rounded accent-primary"
                       />
                       <div className="flex-1">
                         <div className="font-medium text-sm">{event.summary}</div>
-                        <div className="text-xs text-gray-400">{dayjs(event.start_datetime).format('HH:mm')}</div>
+                        <div className="text-xs text-muted-foreground">{dayjs(event.start_datetime).format('HH:mm')}</div>
                       </div>
                       <span className={`w-2 h-2 rounded-full ${event.student_has_line ? 'bg-green-500' : 'bg-gray-300'}`} />
                     </label>
@@ -232,11 +247,11 @@ export default function NotificationsPage() {
             </div>
 
             {events.length > 0 && (
-              <div className="px-4 py-3 border-t bg-gray-50 space-y-2">
+              <div className="px-4 py-3 border-t bg-muted/50 space-y-2">
                 <Button
                   onClick={sendNotifications}
                   disabled={selected.length === 0 || loading}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  className="w-full"
                   size="sm"
                 >
                   {loading ? 'Processing...' : `Send notifications (${selected.length})`}
@@ -255,10 +270,10 @@ export default function NotificationsPage() {
           </div>
 
           {/* Right: Preview & Results */}
-          <div className="flex-1 bg-white rounded-xl border p-6 overflow-y-auto">
+          <div className="flex-1 bg-background rounded-lg border p-6 overflow-y-auto">
             {result ? (
               <div className="space-y-4">
-                <div className="text-xs text-gray-500 uppercase tracking-wide">Result</div>
+                <div className="text-xs text-muted-foreground uppercase tracking-wide">Result</div>
                 <p className="font-medium">{result.title}</p>
 
                 {result.details?.sent_students && result.details.sent_students.length > 0 && (
@@ -324,8 +339,8 @@ export default function NotificationsPage() {
               </div>
             ) : selected.length > 0 ? (
               <div className="space-y-4">
-                <div className="text-xs text-gray-500 uppercase tracking-wide">Message Preview</div>
-                <div className="bg-gray-50 rounded-xl p-4 text-sm space-y-2">
+                <div className="text-xs text-muted-foreground uppercase tracking-wide">Message Preview</div>
+                <div className="bg-muted/50 rounded-lg p-4 text-sm space-y-2">
                   <p className="font-medium">
                     Hi {events.find(e => e.event_id === selected[0])?.summary || 'Student'}!
                   </p>
@@ -333,17 +348,17 @@ export default function NotificationsPage() {
                     Reminder: You have a class on {displayDate} at{' '}
                     {dayjs(events.find(e => e.event_id === selected[0])?.start_datetime).format('HH:mm')}.
                   </p>
-                  <p className="text-gray-400">-- ClassNudge</p>
+                  <p className="text-muted-foreground">-- ClassNudge</p>
                 </div>
 
-                <div className="text-xs text-gray-500 uppercase tracking-wide">
+                <div className="text-xs text-muted-foreground uppercase tracking-wide">
                   Selected ({selected.length})
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {selected.map(id => {
                     const event = events.find(e => e.event_id === id)
                     return event ? (
-                      <span key={id} className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
+                      <span key={id} className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
                         {event.summary}
                       </span>
                     ) : null
@@ -351,7 +366,7 @@ export default function NotificationsPage() {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center h-full text-gray-400 text-sm">
+              <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-sm">
                 <p>Select students to preview message</p>
               </div>
             )}

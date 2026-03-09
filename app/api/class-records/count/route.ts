@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import dayjs from 'dayjs'
 import { supabase } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
@@ -18,7 +17,7 @@ export async function GET(request: NextRequest) {
     // Query class records within specified date range, group by date for statistics
     const { data, error } = await supabase
       .from('class_records')
-      .select('class_date, attended')
+      .select('class_date, attended, student:students!inner(id)')
       .gte('class_date', startDate)
       .lte('class_date', endDate)
 
@@ -34,7 +33,7 @@ export async function GET(request: NextRequest) {
     const dateStatsMap = new Map<string, { total: number, completed: number, pending: number, absent: number }>()
     
     data.forEach(record => {
-      const date = dayjs(record.class_date).format('YYYY-MM-DD')
+      const date = record.class_date.slice(0, 10)
       const stats = dateStatsMap.get(date) || { total: 0, completed: 0, pending: 0, absent: 0 }
       
       stats.total++
