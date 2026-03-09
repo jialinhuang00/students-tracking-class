@@ -24,31 +24,13 @@ export function Navigation() {
 
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center gap-1">
-            <Link href="/">
+            <Link href="/today">
               <Button
-                variant={pathname === '/' ? 'secondary' : 'ghost'}
+                variant={pathname === '/today' || pathname === '/' ? 'secondary' : 'ghost'}
                 size="sm"
                 className="px-4"
               >
-                Home
-              </Button>
-            </Link>
-            <Link href="/notifications">
-              <Button
-                variant={pathname === '/notifications' ? 'secondary' : 'ghost'}
-                size="sm"
-                className="px-4"
-              >
-                Course Notifications
-              </Button>
-            </Link>
-            <Link href="/attendance">
-              <Button
-                variant={pathname === '/attendance' ? 'secondary' : 'ghost'}
-                size="sm"
-                className="px-4"
-              >
-                Class Management
+                Today
               </Button>
             </Link>
             <Link href="/line-users">
@@ -57,7 +39,25 @@ export function Navigation() {
                 size="sm"
                 className="px-4"
               >
-                LINE Followers
+                Students
+              </Button>
+            </Link>
+            <Link href="/notifications">
+              <Button
+                variant={pathname === '/notifications' ? 'secondary' : 'ghost'}
+                size="sm"
+                className="px-4"
+              >
+                Notifications
+              </Button>
+            </Link>
+            <Link href="/attendance">
+              <Button
+                variant={pathname === '/attendance' ? 'secondary' : 'ghost'}
+                size="sm"
+                className="px-4"
+              >
+                Attendance
               </Button>
             </Link>
           </div>
@@ -85,31 +85,13 @@ export function Navigation() {
         {isMenuOpen && (
           <div className="md:hidden border-t bg-gray-50">
             <div className="py-4 space-y-1">
-              <Link href="/" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/today" onClick={() => setIsMenuOpen(false)}>
                 <Button
-                  variant={pathname === '/' ? 'secondary' : 'ghost'}
+                  variant={pathname === '/today' || pathname === '/' ? 'secondary' : 'ghost'}
                   size="sm"
                   className="w-full justify-start px-4"
                 >
-                  Home
-                </Button>
-              </Link>
-              <Link href="/notifications" onClick={() => setIsMenuOpen(false)}>
-                <Button
-                  variant={pathname === '/notifications' ? 'secondary' : 'ghost'}
-                  size="sm"
-                  className="w-full justify-start px-4"
-                >
-                  Course Notifications
-                </Button>
-              </Link>
-              <Link href="/attendance" onClick={() => setIsMenuOpen(false)}>
-                <Button
-                  variant={pathname === '/attendance' ? 'secondary' : 'ghost'}
-                  size="sm"
-                  className="w-full justify-start px-4"
-                >
-                  Class Management
+                  Today
                 </Button>
               </Link>
               <Link href="/line-users" onClick={() => setIsMenuOpen(false)}>
@@ -118,7 +100,25 @@ export function Navigation() {
                   size="sm"
                   className="w-full justify-start px-4"
                 >
-                  LINE Followers
+                  Students
+                </Button>
+              </Link>
+              <Link href="/notifications" onClick={() => setIsMenuOpen(false)}>
+                <Button
+                  variant={pathname === '/notifications' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className="w-full justify-start px-4"
+                >
+                  Notifications
+                </Button>
+              </Link>
+              <Link href="/attendance" onClick={() => setIsMenuOpen(false)}>
+                <Button
+                  variant={pathname === '/attendance' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className="w-full justify-start px-4"
+                >
+                  Attendance
                 </Button>
               </Link>
             </div>
