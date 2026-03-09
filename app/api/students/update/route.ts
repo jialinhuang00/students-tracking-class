@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    const updateData: any = {
+    const updateData: Record<string, string | number> = {
       updated_at: new Date().toISOString()
     }
     

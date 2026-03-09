@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Organize confirmed student and date information
-    const confirmedAttendance = pendingRecords.map((record: any) => ({
-      student_name: record.student?.name || 'Unknown Student',
+    const confirmedAttendance = pendingRecords.map((record) => ({
+      student_name: (record.student as { name: string }[] | null)?.[0]?.name || 'Unknown Student',
       class_date: dayjs(record.class_date).format('M/D HH:mm'),
       date_only: dayjs(record.class_date).format('M/D')
     }))

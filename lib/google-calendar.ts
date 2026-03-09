@@ -25,12 +25,12 @@ function getGoogleAuth() {
   return auth
 }
 
-export function getCalendar() {
+function getCalendar() {
   return google.calendar({ version: 'v3', auth: getGoogleAuth() })
 }
 
 // Taipei Time
-export function formatDateTime(date: Date): string {
+function formatDateTime(date: Date): string {
   return date.toISOString().replace('Z', '+08:00')
 }
 

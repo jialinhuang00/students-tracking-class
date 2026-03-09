@@ -35,7 +35,14 @@ export default function NotificationsPage() {
     open: boolean;
     title: string;
     message: string;
-    details: any;
+    details: {
+      sent_count?: number
+      failed_count?: number
+      sent_students?: string[]
+      created_students?: string[]
+      skipped_students?: string[]
+      failed_students?: { name: string; error: string }[]
+    } | null;
   }>({ open: false, title: '', message: '', details: null })
 
   // Extract reusable event data fetching logic
@@ -474,7 +481,7 @@ export default function NotificationsPage() {
                   <div>
                     <h4 className="font-medium text-red-700 mb-2">❌ Failed ({resultDialog.details.failed_students.length} students):</h4>
                     <div className="bg-red-50 p-3 rounded-md">
-                      {resultDialog.details.failed_students.map((student: any, index: number) => (
+                      {resultDialog.details.failed_students.map((student: { name: string; error: string }, index: number) => (
                         <div key={index} className="text-sm text-red-800">
                           <div className="font-medium">{student.name}</div>
                           <div className="text-xs opacity-75">{student.error}</div>

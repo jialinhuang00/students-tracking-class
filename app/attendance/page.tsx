@@ -266,7 +266,7 @@ export default function AttendancePage() {
                       }
 
                       // Filter out incompatible props for button element
-                      const { onToggle, ...buttonProps } = props as any
+                      const { onToggle, ...buttonProps } = props as Record<string, unknown>
 
                       return (
                         <div className="relative z-10">
