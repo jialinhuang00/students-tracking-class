@@ -2,149 +2,94 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetTitle,
+} from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
+
+const links = [
+  { href: '/today', label: 'Today' },
+  { href: '/line-users', label: 'Students' },
+  { href: '/notifications', label: 'Notifications' },
+  { href: '/attendance', label: 'Attendance' },
+]
 
 export function Navigation() {
   const pathname = usePathname()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const currentPage = links.find(l => l.href === pathname) || links[0]
 
   return (
-    <nav className="bg-white border-b">
-      <div className="container mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 sm:gap-3">
-            <div className="h-7 w-7 sm:h-8 sm:w-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xs sm:text-sm">S</span>
-            </div>
-            <span className="font-bold text-base sm:text-lg">Student Class Tracking</span>
-          </Link>
-
-          {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center gap-1">
-            <Link href="/today">
-              <Button
-                variant={pathname === '/today' || pathname === '/' ? 'secondary' : 'ghost'}
-                size="sm"
-                className="px-4"
-              >
-                Today
-              </Button>
-            </Link>
-            <Link href="/line-users">
-              <Button
-                variant={pathname === '/line-users' ? 'secondary' : 'ghost'}
-                size="sm"
-                className="px-4"
-              >
-                Students
-              </Button>
-            </Link>
-            <Link href="/notifications">
-              <Button
-                variant={pathname === '/notifications' ? 'secondary' : 'ghost'}
-                size="sm"
-                className="px-4"
-              >
-                Notifications
-              </Button>
-            </Link>
-            <Link href="/attendance">
-              <Button
-                variant={pathname === '/attendance' ? 'secondary' : 'ghost'}
-                size="sm"
-                className="px-4"
-              >
-                Attendance
-              </Button>
-            </Link>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className="flex items-center gap-2">
-
-            {/* Mobile Menu Toggle */}
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 text-gray-600 hover:text-gray-900"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {isMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    <div className="border-b bg-background">
+      <div className="container mx-auto flex h-12 items-center justify-between px-4 sm:px-6 max-w-6xl">
+        {/* Desktop: breadcrumb with all pages */}
+        <Breadcrumb className="hidden md:block">
+          <BreadcrumbList>
+            {links.map((link, i) => (
+              <BreadcrumbItem key={link.href}>
+                {link.href === pathname ? (
+                  <BreadcrumbPage>{link.label}</BreadcrumbPage>
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <BreadcrumbLink asChild>
+                    <Link href={link.href}>{link.label}</Link>
+                  </BreadcrumbLink>
                 )}
+                {i < links.length - 1 && <BreadcrumbSeparator>/</BreadcrumbSeparator>}
+              </BreadcrumbItem>
+            ))}
+          </BreadcrumbList>
+        </Breadcrumb>
+
+        {/* Mobile: current page + sheet menu */}
+        <Breadcrumb className="md:hidden">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbPage>{currentPage.label}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
+        <Sheet>
+          <SheetTrigger asChild className="md:hidden">
+            <Button variant="ghost" size="sm" className="px-2 h-8">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Navigation Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden border-t bg-gray-50">
-            <div className="py-4 space-y-1">
-              <Link href="/today" onClick={() => setIsMenuOpen(false)}>
-                <Button
-                  variant={pathname === '/today' || pathname === '/' ? 'secondary' : 'ghost'}
-                  size="sm"
-                  className="w-full justify-start px-4"
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-56 pt-10">
+            <SheetTitle className="sr-only">Navigation</SheetTitle>
+            <nav className="flex flex-col gap-1">
+              {links.map(link => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    'rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent',
+                    pathname === link.href
+                      ? 'font-medium text-foreground'
+                      : 'text-muted-foreground'
+                  )}
                 >
-                  Today
-                </Button>
-              </Link>
-              <Link href="/line-users" onClick={() => setIsMenuOpen(false)}>
-                <Button
-                  variant={pathname === '/line-users' ? 'secondary' : 'ghost'}
-                  size="sm"
-                  className="w-full justify-start px-4"
-                >
-                  Students
-                </Button>
-              </Link>
-              <Link href="/notifications" onClick={() => setIsMenuOpen(false)}>
-                <Button
-                  variant={pathname === '/notifications' ? 'secondary' : 'ghost'}
-                  size="sm"
-                  className="w-full justify-start px-4"
-                >
-                  Notifications
-                </Button>
-              </Link>
-              <Link href="/attendance" onClick={() => setIsMenuOpen(false)}>
-                <Button
-                  variant={pathname === '/attendance' ? 'secondary' : 'ghost'}
-                  size="sm"
-                  className="w-full justify-start px-4"
-                >
-                  Attendance
-                </Button>
-              </Link>
-            </div>
-          </div>
-        )}
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </SheetContent>
+        </Sheet>
       </div>
-    </nav>
-  )
-}
-
-export function Breadcrumb({ items }: { items: Array<{ label: string; href?: string }> }) {
-  return (
-    <nav className="flex items-center space-x-2 text-sm text-muted-foreground mb-6">
-      <Link href="/" className="hover:text-foreground">Home</Link>
-      {items.map((item, index) => (
-        <div key={index} className="flex items-center space-x-2">
-          <span>/</span>
-          {item.href ? (
-            <Link href={item.href} className="hover:text-foreground">
-              {item.label}
-            </Link>
-          ) : (
-            <span className="text-foreground font-medium">{item.label}</span>
-          )}
-        </div>
-      ))}
-    </nav>
+    </div>
   )
 }
