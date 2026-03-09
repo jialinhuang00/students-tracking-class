@@ -4,6 +4,17 @@ import { useState, useEffect } from 'react'
 import dayjs from 'dayjs'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Navigation } from '@/components/navigation'
 import { supabase } from '@/lib/supabase'
 
@@ -34,7 +45,7 @@ export default function StudentsPage() {
   const [recordsLoading, setRecordsLoading] = useState(false)
   const [testingId, setTestingId] = useState<number | null>(null)
   const [testResult, setTestResult] = useState('')
-  const [showDecreaseDialog, setShowDecreaseDialog] = useState<{ show: boolean; studentId: number | null }>({ show: false, studentId: null })
+  const [decreaseDialog, setDecreaseDialog] = useState(false)
 
   useEffect(() => {
     async function fetchStudents() {
@@ -60,7 +71,6 @@ export default function StudentsPage() {
     fetchStudents()
   }, [])
 
-  // Fetch recent records for selected student
   useEffect(() => {
     if (!selectedId) return
 
@@ -121,19 +131,13 @@ export default function StudentsPage() {
               : s
           )
         )
-        setShowDecreaseDialog({ show: false, studentId: null })
+        setDecreaseDialog(false)
       }
     } catch (error) {
       console.error('Error updating student:', error)
     } finally {
       setUpdateLoading(null)
     }
-  }
-
-  const handleDecrease = (studentId: number) => {
-    const student = students.find(s => s.id === studentId)
-    if (!student || student.remaining_classes <= 0) return
-    setShowDecreaseDialog({ show: true, studentId })
   }
 
   const testMessage = async (student: Student) => {
@@ -158,171 +162,168 @@ export default function StudentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/30">
+    <div className="min-h-screen bg-background">
       <Navigation />
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
-        <h1 className="text-lg font-semibold mb-4">
-          Students <span className="text-sm font-normal text-gray-400">({students.length})</span>
-        </h1>
-
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-600" />
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
           </div>
         ) : (
-          <div className="flex gap-4" style={{ height: 'calc(100vh - 140px)' }}>
+          <div className="flex gap-4" style={{ height: 'calc(100vh - 80px)' }}>
             {/* Left: Student List */}
-            <div className="w-72 bg-white rounded-xl border overflow-hidden flex flex-col shrink-0">
-              <div className="p-3 border-b">
+            <div className="w-1/2 border rounded-lg overflow-hidden flex flex-col bg-background">
+              <div className="p-2 border-b">
                 <input
                   type="text"
                   placeholder="Search..."
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  className="w-full px-3 py-1.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-2.5 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 />
               </div>
-              <div className="flex-1 overflow-y-auto divide-y">
+              <div className="flex-1 overflow-y-auto">
                 {filtered.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-sm text-gray-400">No students found</div>
+                  <p className="px-3 py-6 text-center text-sm text-muted-foreground">No students found</p>
                 ) : (
                   filtered.map(student => (
                     <button
                       key={student.id}
                       onClick={() => setSelectedId(student.id)}
-                      className={`w-full text-left px-4 py-3 transition-colors ${
+                      className={`w-full text-left px-3 py-2 text-sm transition-colors border-b last:border-0 ${
                         selectedId === student.id
-                          ? 'bg-blue-50 border-l-2 border-blue-600'
-                          : 'hover:bg-gray-50 border-l-2 border-transparent'
+                          ? 'bg-accent'
+                          : 'hover:bg-muted/50'
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-medium text-sm truncate">{student.name}</span>
-                        <span className={`w-2 h-2 rounded-full shrink-0 ${
-                          student.line_user_id ? 'bg-green-500' : 'bg-gray-300'
-                        }`} />
-                      </div>
-                      <div className="flex items-center justify-between mt-1">
-                        <span className="text-xs text-gray-400">{student.phone || 'No phone'}</span>
-                        <span className={`text-xs font-medium ${
-                          student.remaining_classes === 0
-                            ? 'text-red-600'
-                            : student.remaining_classes <= 2
-                              ? 'text-orange-600'
-                              : ''
-                        }`}>
-                          {student.remaining_classes} left
-                        </span>
+                        <span className="font-medium truncate">{student.name}</span>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <span className={`text-xs ${
+                            student.remaining_classes === 0
+                              ? 'text-destructive'
+                              : student.remaining_classes <= 2
+                                ? 'text-orange-600'
+                                : 'text-muted-foreground'
+                          }`}>
+                            {student.remaining_classes}
+                          </span>
+                          <span className={`w-1.5 h-1.5 rounded-full ${
+                            student.line_user_id ? 'bg-green-500' : 'bg-gray-300'
+                          }`} />
+                        </div>
                       </div>
                     </button>
                   ))
                 )}
               </div>
+              <div className="px-3 py-2 border-t text-xs text-muted-foreground">
+                {students.length} students
+              </div>
             </div>
 
             {/* Right: Detail */}
-            <div className="flex-1 bg-white rounded-xl border p-6 overflow-y-auto">
+            <div className="w-1/2 border rounded-lg overflow-y-auto bg-background">
               {selectedStudent ? (
-                <>
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h2 className="text-xl font-bold">{selectedStudent.name}</h2>
-                      <p className="text-sm text-gray-400">{selectedStudent.phone || 'No phone'}</p>
+                <div className="p-5">
+                  {/* Header row */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <h2 className="text-lg font-semibold">{selectedStudent.name}</h2>
+                      {selectedStudent.line_user_id ? (
+                        <Badge variant="secondary" className="text-green-700 bg-green-50 text-xs">LINE</Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-muted-foreground text-xs">No LINE</Badge>
+                      )}
                     </div>
-                    {selectedStudent.line_user_id ? (
-                      <Badge className="bg-green-100 text-green-700 border-green-200">LINE connected</Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-orange-600 border-orange-300">No LINE</Badge>
-                    )}
-                  </div>
-
-                  {/* Class Balance */}
-                  <div className="bg-gray-50 rounded-xl p-5 mb-6">
-                    <div className="text-xs text-gray-500 uppercase tracking-wide mb-3">Class Balance</div>
-                    <div className="flex items-center gap-6">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleDecrease(selectedStudent.id)}
-                          disabled={updateLoading === selectedStudent.id || selectedStudent.remaining_classes <= 0}
-                          className="w-10 h-10 rounded-xl border-2 text-red-500 hover:bg-red-50 text-xl font-bold disabled:opacity-30 disabled:cursor-not-allowed"
-                        >
-                          -
-                        </button>
-                        <div className="text-center min-w-[3rem]">
-                          <div className={`text-3xl font-bold ${
-                            selectedStudent.remaining_classes === 0
-                              ? 'text-red-600'
-                              : selectedStudent.remaining_classes <= 2
-                                ? 'text-orange-600'
-                                : ''
-                          }`}>
-                            {selectedStudent.remaining_classes}
-                          </div>
-                          <div className="text-xs text-gray-400">remaining</div>
-                        </div>
-                        <button
-                          onClick={() => updateClasses(selectedStudent.id, 1)}
-                          disabled={updateLoading === selectedStudent.id}
-                          className="w-10 h-10 rounded-xl border-2 text-green-500 hover:bg-green-50 text-xl font-bold disabled:opacity-30"
-                        >
-                          +
-                        </button>
-                      </div>
-                      <div className="text-gray-300">|</div>
-                      <div className="text-center">
-                        <div className="text-3xl font-bold text-gray-400">{selectedStudent.total_classes}</div>
-                        <div className="text-xs text-gray-400">total</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Recent Classes */}
-                  <div className="mb-6">
-                    <div className="text-xs text-gray-500 uppercase tracking-wide mb-3">Recent Classes</div>
-                    {recordsLoading ? (
-                      <div className="py-4 text-center text-sm text-gray-400">Loading...</div>
-                    ) : recentRecords.length === 0 ? (
-                      <div className="py-4 text-center text-sm text-gray-400">No class records yet</div>
-                    ) : (
-                      <div className="space-y-1">
-                        {recentRecords.map(record => (
-                          <div key={record.id} className="flex items-center justify-between py-2 border-b last:border-0">
-                            <span className="text-sm">{dayjs(record.class_date).format('M/D HH:mm')}</span>
-                            {record.attended === null ? (
-                              <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-500 rounded">Pending</span>
-                            ) : record.attended ? (
-                              <span className="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded">Attended</span>
-                            ) : (
-                              <span className="text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded">Absent</span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-2">
                     {selectedStudent.line_user_id && (
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => testMessage(selectedStudent)}
                         disabled={testingId === selectedStudent.id}
-                        className="text-xs"
+                        className="text-xs h-7"
                       >
-                        {testingId === selectedStudent.id ? 'Sending...' : 'Send test message'}
+                        {testingId === selectedStudent.id ? 'Sending...' : 'Test message'}
                       </Button>
                     )}
                   </div>
-
                   {testResult && (
-                    <p className="mt-2 text-xs text-gray-500">{testResult}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{testResult}</p>
                   )}
-                </>
+
+                  <Separator className="my-4" />
+
+                  {/* Class balance — inline */}
+                  <div className="flex items-center gap-4">
+                    <span className="text-xs text-muted-foreground uppercase tracking-wide w-20">Balance</span>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => selectedStudent.remaining_classes > 0 && setDecreaseDialog(true)}
+                        disabled={updateLoading === selectedStudent.id || selectedStudent.remaining_classes <= 0}
+                        className="h-7 w-7 p-0 text-destructive"
+                      >
+                        -
+                      </Button>
+                      <span className={`text-lg font-bold tabular-nums min-w-[2rem] text-center ${
+                        selectedStudent.remaining_classes === 0
+                          ? 'text-destructive'
+                          : selectedStudent.remaining_classes <= 2
+                            ? 'text-orange-600'
+                            : ''
+                      }`}>
+                        {selectedStudent.remaining_classes}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => updateClasses(selectedStudent.id, 1)}
+                        disabled={updateLoading === selectedStudent.id}
+                        className="h-7 w-7 p-0 text-green-600"
+                      >
+                        +
+                      </Button>
+                    </div>
+                    <span className="text-xs text-muted-foreground">/ {selectedStudent.total_classes} total</span>
+                  </div>
+
+                  <Separator className="my-4" />
+
+                  {/* Recent classes — compact */}
+                  <div>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wide">Recent Classes</span>
+                    {recordsLoading ? (
+                      <p className="text-sm text-muted-foreground mt-2">Loading...</p>
+                    ) : recentRecords.length === 0 ? (
+                      <p className="text-sm text-muted-foreground mt-2">No records</p>
+                    ) : (
+                      <div className="mt-2 space-y-0.5">
+                        {recentRecords.map(record => (
+                          <div key={record.id} className="flex items-center justify-between py-1.5">
+                            <span className="text-sm text-foreground">{dayjs(record.class_date).format('M/D HH:mm')}</span>
+                            <Badge
+                              variant="outline"
+                              className={`text-xs ${
+                                record.attended === null
+                                  ? 'text-muted-foreground'
+                                  : record.attended
+                                    ? 'text-green-700 border-green-200'
+                                    : 'text-destructive border-red-200'
+                              }`}
+                            >
+                              {record.attended === null ? 'Pending' : record.attended ? 'Attended' : 'Absent'}
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
               ) : (
-                <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+                <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
                   Select a student
                 </div>
               )}
@@ -331,34 +332,28 @@ export default function StudentsPage() {
         )}
       </div>
 
-      {/* Decrease Confirmation Dialog */}
-      {showDecreaseDialog.show && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Confirm Class Usage</h3>
-            <p className="text-gray-600 mb-4">
-              Use a class for <strong>{students.find(s => s.id === showDecreaseDialog.studentId)?.name}</strong>?
-              This will reduce 1 remaining class.
-            </p>
-            <div className="flex gap-3 justify-end">
-              <Button
-                variant="outline"
-                onClick={() => setShowDecreaseDialog({ show: false, studentId: null })}
-                disabled={updateLoading !== null}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => showDecreaseDialog.studentId && updateClasses(showDecreaseDialog.studentId, -1)}
-                disabled={updateLoading !== null}
-                className="bg-red-600 hover:bg-red-700 text-white"
-              >
-                {updateLoading ? 'Processing...' : 'Confirm'}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Decrease Confirmation */}
+      <AlertDialog open={decreaseDialog} onOpenChange={setDecreaseDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Use a class?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This deducts 1 class from <strong>{selectedStudent?.name}</strong>.
+              Remaining: {selectedStudent?.remaining_classes} → {(selectedStudent?.remaining_classes || 0) - 1}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={updateLoading !== null}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => selectedStudent && updateClasses(selectedStudent.id, -1)}
+              disabled={updateLoading !== null}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {updateLoading ? 'Processing...' : 'Confirm'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

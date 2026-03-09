@@ -38,16 +38,18 @@ export function Navigation() {
         <Breadcrumb className="hidden md:block">
           <BreadcrumbList>
             {links.map((link, i) => (
-              <BreadcrumbItem key={link.href}>
-                {link.href === pathname ? (
-                  <BreadcrumbPage>{link.label}</BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink asChild>
-                    <Link href={link.href}>{link.label}</Link>
-                  </BreadcrumbLink>
-                )}
+              <span key={link.href} className="contents">
+                <BreadcrumbItem>
+                  {link.href === pathname ? (
+                    <BreadcrumbPage>{link.label}</BreadcrumbPage>
+                  ) : (
+                    <BreadcrumbLink asChild>
+                      <Link href={link.href}>{link.label}</Link>
+                    </BreadcrumbLink>
+                  )}
+                </BreadcrumbItem>
                 {i < links.length - 1 && <BreadcrumbSeparator>/</BreadcrumbSeparator>}
-              </BreadcrumbItem>
+              </span>
             ))}
           </BreadcrumbList>
         </Breadcrumb>
